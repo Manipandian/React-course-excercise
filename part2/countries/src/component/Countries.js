@@ -9,7 +9,7 @@ const WeatherSpec = (props) => {
         return true;
     }
 
-    if ( !(isEmpty(props.weatherData)) ) {
+    if ( !(isEmpty(props.weatherData)) && props.weatherData.current) {
     return (
         <div>
         <div>Temparature: {props.weatherData.current.temperature}</div>
