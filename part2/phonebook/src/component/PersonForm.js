@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import personsData from "../Services/Persons";
 
 const PersonForm = (props) => {
   const [name, setName] = useState("");
@@ -19,14 +20,25 @@ const PersonForm = (props) => {
         name: name,
         number: number,
       };
-      props.setPerson(props.persons.concat(newPerson));
-      props.setFilter(props.persons.concat(newPerson));
+      personsData.addData(newPerson).then( newData => {
+        props.setPerson(props.persons.concat(newData));
+        props.setFilter(props.persons.concat(newData));
+      })
       props.resetFilterValue("");
       props.setName(props.names.concat(name));
       setName("");
       setNumber("");
     } else {
-      window.alert(` ${name} is already added to phone book`);
+      if(window.confirm(`${name} is already added to phone book, do you wants to update his number`)) {
+        const actualData = props.persons.find(person => person.name === name)
+        const modifiedData = { ...actualData, number: number };
+        personsData.updateData(actualData.id, modifiedData).then( finalData => {
+          props.setPerson(props.persons.map(person => person.name !== name ? person : modifiedData));
+          props.setFilter(props.filter.map(person => person.name !== name ? person : modifiedData));
+        })
+
+      }
+
     }
   };
 

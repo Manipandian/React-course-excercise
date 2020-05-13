@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import axios from "axios";
 import Persons from "./component/Persons";
 import PersonForm from "./component/PersonForm";
 import Filtered from "./component/Filtered";
+import personsData from "./Services/Persons"
 
 const App = () => {
   const [persons, setPerson] = useState([]);
@@ -14,11 +14,16 @@ const App = () => {
 
   const hook = () => {
     console.log("Effect");
-    axios.get("http://localhost:3001/persons").then((resposnse) => {
-      console.log("promise fulfilled");
-      setPerson(resposnse.data);
-      setFilter(resposnse.data);
-    });
+    personsData.getAll().then(dataAccessed => {
+      setPerson(dataAccessed);
+      setFilter(dataAccessed);
+      setName(dataAccessed.map((person) => person["name"]));
+    })
+    // axios.get("http://localhost:3001/persons").then((resposnse) => {
+    //   console.log("promise fulfilled");
+    //   setPerson(resposnse.data);
+    //   setFilter(resposnse.data);
+    // });
   };
 
   useEffect(hook, []);
@@ -46,7 +51,7 @@ const App = () => {
         resetFilterValue={setValue}
       />
       <h3>Numbers</h3>
-      <Persons persons={filteredList} />
+      <Persons filtered={filteredList} allPersons={persons} setPerson={setPerson} setFilter={setFilter}/>
     </div>
   );
 };
