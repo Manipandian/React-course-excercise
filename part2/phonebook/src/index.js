@@ -4,33 +4,40 @@ import "./index.css";
 import Persons from "./component/Persons";
 import PersonForm from "./component/PersonForm";
 import Filtered from "./component/Filtered";
-import personsData from "./Services/Persons"
+import personsData from "./Services/Persons";
+import './index.css'
+
+
+const Notification = ({message}) => {
+  if (message === null) {
+    return null
+  }
+  return (
+    <div className={(message.indexOf('successfully') !== -1) ? "success" : "error"}>
+    {message}
+    </div>
+  )
+}
 
 const App = () => {
   const [persons, setPerson] = useState([]);
   const [names, setName] = useState(persons.map((person) => person["name"]));
   const [filteredList, setFilter] = useState([...persons]);
   const [filterValue, setValue] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const hook = () => {
-    console.log("Effect");
     personsData.getAll().then(dataAccessed => {
       setPerson(dataAccessed);
       setFilter(dataAccessed);
       setName(dataAccessed.map((person) => person["name"]));
     })
-    // axios.get("http://localhost:3001/persons").then((resposnse) => {
-    //   console.log("promise fulfilled");
-    //   setPerson(resposnse.data);
-    //   setFilter(resposnse.data);
-    // });
   };
 
   useEffect(hook, []);
-
-  console.log("render", persons.length, "notes");
   return (
     <div>
+      <Notification message={errorMessage}/>
       <h2>Phonebook</h2>
       Filter shown with:
       <Filtered
@@ -49,6 +56,7 @@ const App = () => {
         setFilter={setFilter}
         filter={filteredList}
         resetFilterValue={setValue}
+        setErrorMessage={setErrorMessage}
       />
       <h3>Numbers</h3>
       <Persons filtered={filteredList} allPersons={persons} setPerson={setPerson} setFilter={setFilter}/>

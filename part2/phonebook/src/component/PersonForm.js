@@ -24,21 +24,33 @@ const PersonForm = (props) => {
         props.setPerson(props.persons.concat(newData));
         props.setFilter(props.persons.concat(newData));
       })
+      props.setErrorMessage(`Data of ${name} has been added successfully`)
+          setTimeout(() => {
+            props.setErrorMessage(null)
+          }, 5000);
       props.resetFilterValue("");
       props.setName(props.names.concat(name));
       setName("");
       setNumber("");
     } else {
-      if(window.confirm(`${name} is already added to phone book, do you wants to update his number`)) {
         const actualData = props.persons.find(person => person.name === name)
         const modifiedData = { ...actualData, number: number };
         personsData.updateData(actualData.id, modifiedData).then( finalData => {
           props.setPerson(props.persons.map(person => person.name !== name ? person : modifiedData));
           props.setFilter(props.filter.map(person => person.name !== name ? person : modifiedData));
         })
-
-      }
-
+        .catch(error => {
+          props.setErrorMessage(`This data of ${name} already deleted from the server, so it will be added as new one`)
+          setTimeout(() => {
+            props.setErrorMessage(null)
+          }, 5000);
+          personsData.addData(modifiedData).then( finalData => {
+            props.setPerson(props.persons.map(person => person.name !== name ? person : modifiedData));
+            props.setFilter(props.filter.map(person => person.name !== name ? person : modifiedData));
+          })
+        })
+        setName("");
+        setNumber("");
     }
   };
 
